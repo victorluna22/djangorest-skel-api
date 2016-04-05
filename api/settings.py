@@ -27,9 +27,9 @@ DEBUG = True
 
 ALLOWED_HOSTS = []
 
-EMAIL_FROM = 'contato@ipill.com.br'
+EMAIL_FROM = 'contato@domain.com.br'
 
-GMAP_API_KEY = 'AIzaSyAI3WV6nZ7eou3eMDbRFWCLm5Un8pj4DZA'
+GMAP_API_KEY = '...'
 
 
 # Application definition
@@ -92,11 +92,11 @@ WSGI_APPLICATION = 'wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.contrib.gis.db.backends.postgis',
-        'HOST': '52.38.132.247',
+        'HOST': '...',
         'PORT': '5432',
-        'NAME': 'stepbox',
-        'USER': 'stepuseradmin',
-        'PASSWORD': 'step!#&db16-',
+        'NAME': '...',
+        'USER': '...',
+        'PASSWORD': '...',
 
     }
 }
@@ -176,7 +176,7 @@ ADM_MIN_DISCHARGE = 20.0 # Taxa administrativa para saques
 REDECARD_URL_PROD = 'https://ecommerce.userede.com.br/pos_virtual/wskomerci/cap.asmx'
 REDECARD_URL_DEV = 'https://ecommerce.userede.com.br/pos_virtual/wskomerci/cap_teste.asmx'
 
-GCM_APIKEY = "AIzaSyD-6rtU_-c3O0KAIwXYVT9jGnm709IkYfM||"
+GCM_APIKEY = "..."
 GCM_DEVICE_MODEL = 'account.models.DeviceUser'
 
 
@@ -192,16 +192,14 @@ CORS_ALLOW_HEADERS = (
         'x-csrftoken'
     )
 CORS_ORIGIN_WHITELIST = (
-        # 'api.ipill.com.br',
-        # 'dev.ipill.com.br',
         'localhost',
         'localhost:9000'
     )
 
 SEND_EMAIL = True
-EMAIL_HOST = 'email-smtp.us-west-2.amazonaws.com||'
-EMAIL_USER = 'AKIAIPFSHJ4VWMU465MA'
-EMAIL_PASSWORD = 'AjReM7K9pi5WUh56/BBCwwjAm7FNfQifJtTqUmpKU3wV'
+EMAIL_HOST = '...'
+EMAIL_USER = '...'
+EMAIL_PASSWORD = '...'
 EMAIL_PORT = 587
 EMAIL_TLS = True
 
