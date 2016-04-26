@@ -42,7 +42,7 @@ ADM = 3
 
 USER_TYPES = (
     (CONSUMER, "Consumidor"),
-    (COMPANY, u"Empresa"),
+    (COMPANY, "Empresa"),
     (ADM, "Administrador"),
     )
 
@@ -145,7 +145,6 @@ class StepAbstractUser(AbstractBaseUser, PermissionsMixin):
         elif self.is_adm():
             return self.admuser
 
-
     def get_absolute_url(self):
         return "/users/%s/" % urlquote(self.email)
 
@@ -158,14 +157,12 @@ class StepAbstractUser(AbstractBaseUser, PermissionsMixin):
     def get_hash_activate(self):
         return base64.b64encode("%s!@#%s" % (self.id, self.email))
 
-
     def get_short_name(self):
         """
         Returns the short name for the user.
         """
 
         return self.full_name.split()[0] if self.full_name else self.email
-
 
     def email_user(self, subject, message, from_email=None):
         """
@@ -185,6 +182,7 @@ class StepAbstractUser(AbstractBaseUser, PermissionsMixin):
 #         verbose_name = _(u'País')
 #         verbose_name_plural = _(u'Países')
 
+
 class State(models.Model):
     name = models.CharField(max_length=100)
     acronym = models.CharField(max_length=2)
@@ -195,9 +193,11 @@ class State(models.Model):
         verbose_name = _(u'Estado')
         verbose_name_plural = _(u'Estados')
 
+
 class City(models.Model):
     name = models.CharField(max_length=100)
     state = models.ForeignKey(State)
+
     def __unicode__(self):
         return u'%s - %s' % (self.name, self.state.acronym)
 
@@ -216,7 +216,6 @@ class AddressManager(models.Manager):
             return result
         except:
             raise APIException('No results')
-        
 
     def geocodeGoogle(self, location):
         location = urllib.quote_plus(location)
@@ -234,6 +233,7 @@ class AddressManager(models.Manager):
                 return location.raw['address']
             return None
 
+
 class Address(models.Model):
     street = models.CharField('Rua', max_length=255, null=True, blank=True)
     number = models.CharField(u'Número', max_length=30, null=True, blank=True)
@@ -245,6 +245,7 @@ class Address(models.Model):
     deleted = models.BooleanField('Deletado', default=0)
 
     objects = AddressManager()
+
     class Meta:
         verbose_name = _(u'Endereço')
         verbose_name_plural = _(u'Endereços')
@@ -253,7 +254,6 @@ class Address(models.Model):
     #     data = self.objects.geocodeGoogle('%s %s, %s %s - %s' % (self.street, self.number, self.neighborhood, self.city.name, self.city.state.name))
     #     import pdb;pdb.set_trace()
     #     return super(Address, self).save(*args, **kwargs)
-
 
 
 class ConsumerUser(StepAbstractUser):
@@ -286,6 +286,7 @@ class Employee(StepAbstractUser):
         verbose_name = _(u'Usuário da empresa')
         verbose_name_plural = _(u'Usuários da empresa')
 
+
 class AdmUser(StepAbstractUser):
     objects = StepUserManager()
 
@@ -296,6 +297,7 @@ class AdmUser(StepAbstractUser):
 
 class DeviceUser(AbstractDevice):
     user = models.ForeignKey(ConsumerUser, related_name='devices')
+
 
 class File(models.Model):
     image = models.ImageField(u'Imagem', upload_to='images/')

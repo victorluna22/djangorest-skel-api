@@ -34,6 +34,7 @@ class CompanyViewSet(viewsets.ModelViewSet):
             return Response({'detail': 'Registro removido com sucesso'})
         return Response({'detail': 'Erro ao tentar remover registro'})
 
+
 class CompanyEditView(generics.UpdateAPIView):
     serializer_class = CompanyWriteSerializer
     permission_classes = (IsAuthenticated, CompanyPermission)

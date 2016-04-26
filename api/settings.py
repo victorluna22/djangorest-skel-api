@@ -92,11 +92,11 @@ WSGI_APPLICATION = 'wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.contrib.gis.db.backends.postgis',
-        'HOST': '...',
+        'HOST': '52.67.91.172',
         'PORT': '5432',
-        'NAME': '...',
-        'USER': '...',
-        'PASSWORD': '...',
+        'NAME': 'facilita',
+        'USER': 'facilitauser',
+        'PASSWORD': 'facilita#!&16',
 
     }
 }

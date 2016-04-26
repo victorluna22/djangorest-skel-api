@@ -43,9 +43,10 @@ ORDER_SITUATIONS = (
     (CANCELED, u'Cancelado'),
 )
 
+
 class PaymentType(models.Model):
     name = models.CharField('Nome', max_length=255)
-    credit_ipill = models.BooleanField(default=1)
+    gain_credit = models.BooleanField(default=1)
     obligatory = models.BooleanField(default=0)
     
 
@@ -118,6 +119,7 @@ class Order(models.Model):
                 OrderChangeSituation.objects.create(order=self, old_situation=old_order.situation, current_situation=self.situation)
         return super(Order, self).save(*args, **kwargs)
 
+
 class ProductItemManager(models.Manager):
     def get_best_seller(self, company):
         result = self.filter(order__company=company, order__status=0).values('product__name').annotate(selled_count=models.Count('product')).order_by('-selled_count')[0]
@@ -160,6 +162,7 @@ BALANCE_KIND_CHOICES = (
     (BALANCE_KIND_CREDIT, u'Crédito'),
 )
 
+
 class DischargeManager(models.Manager):
     def total_discharged(self, company):
         return super(DischargeManager, self).filter(company=company, status=DISCHARGE_STATUS_DONE).aggregate(
@@ -174,6 +177,7 @@ class DischargeManager(models.Manager):
             total=Sum('total'))['total'] or 0
         total_discharged = self.total_discharged(company)
         return total_available - total_discharged
+
 
 class Discharge(models.Model):
     company = models.ForeignKey(Company)
@@ -211,9 +215,6 @@ class Discharge(models.Model):
             value = Discharge.objects.total_discharge_available(self.company)
             BalanceOperation.objects.create(company=self.company, kind=kind, value=value, value_company=value, discharge=self)
         return data
-
-
-
 
 
 class BalanceManager(models.Manager):
@@ -258,5 +259,5 @@ class BalanceOperation(models.Model):
 
 
 
-post_save_order.connect(post_save_order_receiver, sender=Order, dispatch_uid='ipill.checkout.signals.post_save_order')
-post_save.connect(post_save_balance_operation_receiver, sender=BalanceOperation, dispatch_uid='ipill.checkout.signals.post_save_balance')
+post_save_order.connect(post_save_order_receiver, sender=Order, dispatch_uid='project.checkout.signals.post_save_order')
+post_save.connect(post_save_balance_operation_receiver, sender=BalanceOperation, dispatch_uid='project.checkout.signals.post_save_balance')

@@ -2,7 +2,7 @@
 from django.conf import settings
 import os, sys, site
 from os.path import abspath, join, dirname
-project_name = "ipill-api"
+project_name = "djangorest-skel-api"
 root_dir = abspath(join(dirname(__file__), '..'))
 sys.path.append(root_dir)
 sys.path.append(join(root_dir, project_name))

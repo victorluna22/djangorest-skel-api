@@ -94,7 +94,7 @@ class ProductImageView(views.APIView):
         form = FileForm(request.POST, request.FILES)
         if form.is_valid():
             file = form.save()
-        return Response({'file': 'http://ipill.com.br/media/%s' % file.image.name})
+        return Response({'file': 'http://domain.com.br/media/%s' % file.image.name})
 
 
 class ProductStatusView(generics.ListAPIView):

@@ -11,7 +11,6 @@ from rest_framework.views import APIView
 from rest_framework import status
 from rest_framework.exceptions import APIException
 from rest_framework_jwt.views import JSONWebTokenAPIView, JSONWebTokenSerializer, RefreshJSONWebToken
-from rest_framework_jwt.compat import get_request_data
 from rest_framework_jwt.settings import api_settings
 from ..models import CONSUMER, COMPANY, ADM, DeviceUser
 from ..serializers import ConsumerUserSerializer, EmployeeSerializer, AdmUserSerializer
@@ -56,7 +55,7 @@ class ObtainAuthToken(JSONWebTokenAPIView):
 
     def post(self, request, *args, **kwargs):
         serializer = self.get_serializer(
-            data=get_request_data(request)
+            data=request.data
         )
 
         if serializer.is_valid(raise_exception=True):
@@ -65,7 +64,7 @@ class ObtainAuthToken(JSONWebTokenAPIView):
             response_data = jwt_response_payload_handler(token, user, request)
             if user.get_user().is_consumer():
                 s = ConsumerUserSerializer(user.get_user())
-                data = get_request_data(request)
+                data = request.data
                 if data.get('gcm_token'):
                     print 'IFFFFFF - %s' % data.get('gcm_token')
                     if not DeviceUser.objects.filter(reg_id=data.get('gcm_token'), user=user.get_user()).exists():
@@ -86,7 +85,7 @@ class RefreshAuthToken(RefreshJSONWebToken):
 
     def post(self, request, *args, **kwargs):
         serializer = self.get_serializer(
-            data=get_request_data(request)
+            data=request.data
         )
 
         if serializer.is_valid():

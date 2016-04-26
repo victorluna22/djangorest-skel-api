@@ -1,10 +1,7 @@
 # encoding: utf-8
 
-import pyboleto
 import datetime
 import os
-from django.shortcuts import render
-from django.db import transaction
 from django.conf import settings
 from django.db.models import Count, Sum
 from rest_framework import viewsets
@@ -12,11 +9,9 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.exceptions import APIException
 from rest_framework.response import Response
 from rest_framework import generics
-from pyboleto.bank.bancodobrasil import BoletoBB
-from pyboleto.pdf import BoletoPDF
 from .serializers import OrderWriteSerializer, OrderCashWriteSerializer, OrderReadSerializer, \
     OrderChangeSituationSerializer, ProductItemSerializer, ProductItemWriteSerializer, DischargeSerializer, \
-    DischargeStatusSerializer, BalanceOperationSerializer, BoletoSerializer, DischargeReadSerializer, \
+    DischargeStatusSerializer, BalanceOperationSerializer, DischargeReadSerializer, \
     RevenuesSerializer
 from .models import Order, ProductItem, Discharge, BalanceOperation, ORDER_AUTHORIZED, BALANCE_KIND_CREDIT
 from .signals import post_save_order
@@ -222,118 +217,3 @@ class OperationsCompanyListView(generics.ListAPIView):
 
         operations = operations.extra({'date_created':"date(created_at)"}).values('date_created').annotate(transactions=Count('id'), total=Sum('value'), receive=Sum('value_company'))
         return operations
-
-class BoletoCreateView(generics.CreateAPIView):
-    serializer_class = BoletoSerializer
-    permission_classes = (IsAuthenticated,)
-
-    def post(self, request, *args, **kwargs):
-        d = BoletoBB(7, 2)
-        d.nosso_numero = '87654'
-        d.numero_documento = '27.030195.10'
-        d.convenio = '7777777'
-        d.especie_documento = 'DM'
-
-        d.carteira = '18'
-        d.cedente = 'Empresa ACME LTDA'
-        d.cedente_documento = "102.323.777-01"
-        d.cedente_endereco = "Rua Acme, 123 - Centro - Sao Paulo/SP - CEP: 12345-678"
-        d.agencia_cedente = '9999'
-        d.conta_cedente = '99999'
-
-        d.data_vencimento = datetime.date(2010, 3, 27)
-        d.data_documento = datetime.date(2010, 2, 12)
-        d.data_processamento = datetime.date(2010, 2, 12)
-
-        d.instrucoes = [
-            "- Linha 1",
-            "- Sr Caixa, cobrar multa de 2% após o vencimento",
-            "- Receber até 10 dias após o vencimento",
-            ]
-        d.demonstrativo = [
-            "- Serviço Teste R$ 5,00",
-            "- Total R$ 5,00",
-            ]
-        d.valor_documento = 255.00
-
-        d.sacado = [
-            "Cliente Teste",
-            "Rua Desconhecida, 00/0000 - Não Sei - Cidade - Cep. 00000-000",
-            ""
-            ]
-        name = os.path.join(settings.BASE_DIR, 'media/')+'boleto-bb-%s.pdf' % d.__hash__()
-        boleto = BoletoPDF(name)
-        boleto.drawBoleto(d)
-        boleto.save()
-        return Response({'link': 'http://api.ipill.com.br/media/boleto-bb-%s.pdf' % d.__hash__()})
-
-
-
-def boleto_bb(request):           
-    dados = dict()
-
-    dados['nosso_numero'] = '87654'
-    dados['numero_documento'] = '27.030195.10'
-    
-    #dados['data_vencimento'] = 'DD/MM/AAAA'                 # Informar data vencimento
-    dados['data_vencimento'] = (date.today() + timedelta(5)
-                               ).strftime("%d/%m/%Y")       # data vencimento demonstra￧￣o, data atual + 5 dias
-    
-    dados['data_documento'] = date.today().strftime("%d/%m/%Y")
-    dados['data_processamento'] = date.today().strftime("%d/%m/%Y")
-    dados['valor_boleto'] = 2950.00
-    dados['taxa_boleto'] = 2.95
-
-    # Dados da sua conta - BANCO DO BRASIL 
-    dados['agencia'] = '9999'
-    dados['conta'] = '99999'
-
-    # Dados personalizados - BANCO DO BRASIL 
-    dados['convenio'] = '7777777'
-    dados['contrato'] = '999999'
-    dados['carteira'] = '18'
-    dados['variacao_carteira'] = '-019'
-
-    # Informações do seu cliente 
-    dados['sacado'] = 'Nome do seu Cliente'
-    dados['endereco1'] = 'Endereço do seu Cliente'
-    dados['endereco2'] = 'Cidade - Estado -  CEP: 00000-000'
-
-    # Informações para o cliente 
-    dados['demonstrativo1'] = 'Pagamento de Compra na Loja Nonononono'
-    dados['demonstrativo2'] = """Mensalidade referente a nonon nonooon nononon """
-    dados['demonstrativo3'] = 'PyBoletos'
-
-    # Instruções para o Caixa 
-    dados['instrucoes1'] = '- Sr. Caixa, cobrar multa de 2% após o vencimento'
-    dados['instrucoes2'] = '- Receber até 10 dias após o vencimento'
-    dados['instrucoes3'] = '- Em caso de dúvidas entre em contato conosco: opencode@gmail.com '
-    dados['instrucoes4'] = '- Emitido pelo sistema PyBoletos '
-
-
-    # Dados opcionais de acordo com o banco ou cliente 
-    dados['quantidade'] = '10'
-    dados['valor_unitario'] = '10'
-    dados['aceite'] = "N";        
-    dados['especie'] = 'R$'
-    dados['especie_doc'] = 'DM'
-
-
-    # Deus Dados     
-    dados['identificacao'] = ' PyBoletos '
-    dados['cpf_cnpj'] = ''
-    dados['endereco'] = 'Coloque o endereço da sua empresa aqui'
-    dados['cidade_uf'] = 'Cidade / Estado'
-    dados['cedente'] = 'Coloque a Razã Social da sua empresa aqui'
-
-    dados_resposta = BoletoBancoDoBrasil.get_dados(7,2,dados)
-
-    return render_to_response("boletos/bancodobrasil.html", dados_resposta)
-
-
-
-
-
-
-
-        

@@ -19,7 +19,6 @@ class Company(models.Model):
     deleted = models.BooleanField('Deletado', default=0)
     created_at = models.DateTimeField(auto_now_add=True)
 
-
     class Meta:
         verbose_name = _(u'Empresa')
         verbose_name_plural = _(u'Empresas')
@@ -32,7 +31,6 @@ class Company(models.Model):
             return "%.2f" % self.ratings.all().aggregate(Avg('vote'))['vote__avg']
         except:
             return 0
-
 
 
 class Review(models.Model):
