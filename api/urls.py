@@ -1,6 +1,8 @@
 from django.conf.urls import patterns, include, url
 from django.conf import settings
 from rest_framework import routers
+from rest_framework_jwt.views import verify_jwt_token
+from django.views.static import serve
 from account.views.consumer import ConsumerUserViewSet, AddressUserCreateView, user_delete, UserForgotPasswordView, \
     UserChangePasswordView
 from account.views.employee import EmployeeViewSet, EmployeeCreateView
@@ -21,7 +23,7 @@ admin.autodiscover()
 
 router = routers.DefaultRouter()
 router.register(r'users', ConsumerUserViewSet, 'Users')
-router.register(r'pharmacists', EmployeeViewSet, 'Pharmacists')
+router.register(r'employees', EmployeeViewSet, 'Pharmacists')
 router.register(r'administrators', AdmUserViewSet, 'Administrators')
 router.register(r'states', StateViewSet, 'States')
 router.register(r'cities', CityViewSet, 'Cities')
@@ -43,7 +45,7 @@ urlpatterns = [
     url(r'^api-auth/', include('rest_framework.urls', namespace='rest_framework')),
     url(r'^api/login/$', ObtainAuthToken.as_view()),
     url(r'^api/login/lookup/$', RefreshAuthToken.as_view()),
-    url(r'^api/token/verify/$', 'rest_framework_jwt.views.verify_jwt_token'),
+    url(r'^api/token/verify/$', verify_jwt_token),
     url(r'^api/geocoder/location/$', GetGeoLocation.as_view(), name='geocoder_location'),
     url(r'^api/geocoder/location/latlon/$', GetGeoLocationByLatLon.as_view(), name='geocoder_location_latlon'),
 
@@ -67,7 +69,7 @@ urlpatterns = [
         url(r'^users/change-password/$', UserChangePasswordView.as_view(), name="user_change_password"),
         url(r'^users/address/$', AddressUserCreateView.as_view(), name="user_address_create"),
         url(r'^users/email/(?P<email>.+)/$', user_delete, name="user_delete"),
-        url(r'^pharmacists/create/$', EmployeeCreateView.as_view(), name="pharmacists_create"),
+        url(r'^employees/create/$', EmployeeCreateView.as_view(), name="employees_create"),
         url(r'^companies/dashboard/info/$', CompanyDashInfoView.as_view(), name="company_dash_info"),
         url(r'^companies/payment-types/(?P<pk>\d+)/$', CompanyPaymentsView.as_view(), name="company_payments"),
         url(r'^companies/edit/$', CompanyEditView.as_view(), name="company_edit"),
@@ -80,5 +82,5 @@ urlpatterns = [
 ]
 
 if settings.DEBUG:
-    urlpatterns.append(url(r'^media/(?P<path>.*)$', 'django.views.static.serve', {'document_root': settings.MEDIA_ROOT, 'show_indexes': True }))
-    urlpatterns.append(url(r'^static/(?P<path>.*)$', 'django.views.static.serve', {'document_root': settings.STATIC_ROOT}))
+    urlpatterns.append(url(r'^media/(?P<path>.*)$', serve, {'document_root': settings.MEDIA_ROOT, 'show_indexes': True }))
+    urlpatterns.append(url(r'^static/(?P<path>.*)$', serve, {'document_root': settings.STATIC_ROOT}))
