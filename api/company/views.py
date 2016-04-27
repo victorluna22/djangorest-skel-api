@@ -15,7 +15,7 @@ from .serializers import CompanySerializer, CompanyWriteSerializer, ReviewWriteS
 from .models import Company, Review
 from account.serializers import AddressSerializer, AddressWriteSerializer
 from checkout.serializers import PaymentTypeSerializer
-from account.permissions import ConsumerPermission, CompanyPermission
+from account.permissions import ConsumerPermission, CompanyPermission, AdmPermission
 from account.models import Address, City
 from checkout.models import ProductItem, PaymentType
 
@@ -23,7 +23,7 @@ from checkout.models import ProductItem, PaymentType
 class CompanyViewSet(viewsets.ModelViewSet):
     queryset = Company.objects.filter(deleted=0).order_by('-id')
     serializer_class = CompanySerializer
-    # permission_classes = (IsAuthenticated, ConsumerPermission)
+    permission_classes = (IsAuthenticated, AdmPermission)
 
     def update(self, request, pk=None):
         self.serializer_class = CompanyWriteSerializer
